@@ -1,19 +1,14 @@
---// EVADE menu replica v34 (LocalScript / executor) + JUMP ZONE MOBILE
+--// EVADE menu replica v35 (LocalScript / executor) — FULL, BALANCED
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local RS = game:GetService("ReplicatedStorage")
 
---// MOBILE: телефон = есть тач
 local isMobile = UIS.TouchEnabled
 local mobileOrb = nil
 local zone, zoneGui = nil, nil
 local zoneHeld = false
-task.spawn(function()
-	task.wait(1)
-	print("[rg] Touch:", UIS.TouchEnabled, "Mouse:", UIS.MouseEnabled, "Keyboard:", UIS.KeyboardEnabled, "isMobile:", isMobile)
-end)
 
 local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 for _, child in ipairs(playerGui:GetChildren()) do
@@ -29,7 +24,6 @@ pcall(function()
 	end
 end)
 
---// HOOK APPLY
 local swapContent, swapLegacy, resetEmotes, resetBase, applyToCharacter, resetCharacter, resetAll
 
 --================= НАСТРОЙКИ =================
@@ -86,7 +80,7 @@ local function ensureIcon(name)
 end
 
 --================= DATA ARRAYS =================
-OVERHAUL_NAMES = {"AstralNebula","AutumnLeaves","BlueAbduction","CharmingHearts","CosmicVortex","CursedHorns","DarkStarElectrified","EnergizedPurple","EnergizedRed","FireHorns","FloweringPetals","GreenAbduction","Haha","IgneousGeyser","IrradiatingHalo","NightLights","Particulatelridescence","PrismaticGeyser","PrismaticRadiance","RedAbduction","RoseateGeyser","ShiningSparkles","ThunderingStorm","Voltaic","AmethystEnergy","AustralisNebula","AzureMaelstrom","BinaryBeams","BorealisNebula","Bubbly","ByteFracture","CollapsingSingularity","ColossalFlashes","Cosmichalo","DizzyStars","EclipseButterflies","EctoplasmicStar","HalleysComet","Howlite Maelstrom","LavenderUtopia","LunarLight","MoonlightButterflies","MorningButterflies","OrangeEMP","PurpleEMP","Refractions","RoaringSingularity","ScarletMaelstrom","ShimmeringParadise","Timekeeper","Timewarp","VioletNocturne","AbyssalRapture","BlueStarEruption","HeadphoneResonance","OrangeStarEruption","PinkStarEruption","ShiftingParadigm","BoltSkaters","ButterflyAzure","ButterflyCrimson","ButterflyEclipse","ButterflyOrchid","FallingStar","FlameWreath","SelenesGrace","VoidStar","VoidCorruption","2023Celebration","2AnniversaryHat","AlphaTester","BlazingCandle","CCHaze","CirclingCatBobo","CirclingCatJard","CirclingCatPufferfish","CirclingEclipseCola","Default","DonationVictorian","FragmentedSingularity","GlowingHaze","LevelVictorian","OneBillionReward","OverhaulHat","Party","SurvivalVictorian","TweetReward","VampireBobo","CursedEye","OminousDemise","ToxicInferno","HellfirePortal","BluefirePortal","DarkTendrils","IllusionEyes","BloodMoon","HauntedIridescence","BlizzardyStorm","MintyExplosion","VerdantStag","GlacialOutburst","XmasBurst","FrigidPerception","SubzeroBurst","AuroranStag","SuspendedLights","ShimmeringCoronet","GlowingTree","AngelicRedemption","WinterChains","AuroraBorealis","GildedStag","FrostFlame","WintertideEssence","BionicRejuvination","Adoration","Euphoria","SoulSnatcher","ScarletSlash","NoxiousAura","AzureMistWatcher","CrimsonMistWatcher","HexerIris","DemonIris","PlaguedIris","AbyssalEyes","SoulRifter","RuinousArcana","RunicRitual","NuclearFuture","CloverEssence","LuckyStrike","LeprechaunsRune","StPixels","EclipseLove","PureLove","AtomicHeart","CupidsArrow","Candynado","Snownado","EtherealSaucer","CandyCaneAura","AuroranTophat","GleamingConstellation","JollyCrown","FrigidCrown","EclipseCrown","OrbitingSerenade","PalpitatingHeart","WebTraps","CacklingMoon","SpectralSummoning","CataclysmicPortal","MarigoldRitual","RunicWinds","MonochromeEclipse","DemonicAcidicWings","DemonicEclipseWings","DemonicInfernalWings","RunicCloverLegs","RetroCloverExplosion","MidasTouch","JellyfishSwarm","HotHawaiianFlowers","TropicalHawaiianFlowers","CoolHawaiianFlowers","SunnySkies","EyeOfHorus","DeepseaAngler","VaporwaveRays","SolarFlareStreak","CelestialStars","HeartSkaters","RelentlessBlizzard","MysticalTree","AmethystAurora","BorealisAurora","PepperimentAurora","SnowflakeAegis","NorthernStarRadiance","GlacialEntrails","HeavenlyCrown","AngelOfDishonor","StellarNebula","HauntedCarousel","AuricShadeRunes","NightShadeRunes","BloodShadeRunes","AncientPenumbra","Wispbound","AlebrijeHorns","BloodyCrown","DuckyWaterFall","SunnyDay","OceanSymmetry","BlazingSun","TropicalNatureCrown","LuminescentJellyfish","RetroSunset","SkylineVinyl","EasterEggHunter","LotusRift","OakBlessing","AquamarineBlossom","CrimsonBlossom","LuminousBlossom","VerdantLaurel","MonarchWings","ShamrockShimmer","CircleOfRoses","HealingHalo","SakuraFlowers","LunarFortune","Tixsplosion","SpawnHalo","RingOfFireHalo","BeeShield","GlorpCatInfection","CapeOfPoseidon","Thermocline","EncapsulatedBarbedWires","OozingMoney","AnimalAura","CatRadiance","DoggoAura","EclipseNova","Technotic","ChaoticRadiance","PrismaticWhispers","KoiPond","HornsOfToxicity","HornsOfInferno","HornsOfFrost","KhanOfWinter","Absorption","BoboVortex","CirclingBeams","EliteHelmet","Glow","Glow Solid","Graduation Bear","Grunt","MarkV","MasterChief","MrGray","Nothing","NuclearDoom","OmniMan","Pootis","Sangheili","Spy","Template","bobotower","handtest","sus","testlol"}
+OVERHAUL_NAMES = {"AstralNebula","AutumnLeaves","BlueAbduction","CharmingHearts","CosmicVortex","CursedHorns","DarkStarElectrified","EnergizedPurple","EnergizedRed","FireHorns","FloweringPetals","GreenAbduction","Haha","IgneousGeyser","IrradiatingHalo","NightLights","Particulatelridescence","PrismaticGeyser","PrismaticRadiance","RedAbduction","RoseateGeyser","ShiningSparkles","ThunderingStorm","Voltaic","AmethystEnergy","AustralisNebula","AzureMaelstrom","BinaryBeams","BorealisNebula","Bubbly","ByteFracture","CollapsingSingularity","ColossalFlashes","Cosmichalo","DizzyStars","EclipseButterflies","EctoplasmicStar","HalleysComet","Howlite Maelstrom","LavenderUtopia","LunarLight","MoonlightButterflies","MorningButterflies","OrangeEMP","PurpleEMP","Refractions","RoaringSingularity","ScarletMaelstrom","ShimmeringParadise","Timekeeper","Timewarp","VioletNocturne","AbyssalRapture","BlueStarEruption","HeadphoneResonance","OrangeStarEruption","PinkStarEruption","ShiftingParadigm","BoltSkaters","ButterflyAzure","ButterflyCrimson","ButterflyEclipse","ButterflyOrchid","FallingStar","FlameWreath","SelenesGrace","VoidStar","VoidCorruption","2023Celebration","2AnniversaryHat","AlphaTester","BlazingCandle","CCHaze","CirclingCatBobo","CirclingCatJard","CirclingCatPufferfish","CirclingEclipseCola","Default","DonationVictorian","FragmentedSingularity","GlowingHaze","LevelVictorian","OneBillionReward","OverhaulHat","Party","SurvivalVictorian","TweetReward","VampireBobo","CursedEye","OminousDemise","ToxicInferno","HellfirePortal","BluefirePortal","DarkTendrils","IllusionEyes","BloodMoon","HauntedIridescence","BlizzardyStorm","MintyExplosion","VerdantStag","GlacialOutburst","XmasBurst","FrigidPerception","SubzeroBurst","AuroranStag","SuspendedLights","ShimmeringCoronet","GlowingTree","AngelicRedemption","WinterChains","AuroraBorealis","GildedStag","FrostFlame","WintertideEssence","BionicRejuvination","Adoration","Euphoria","SoulSnatcher","ScarletSlash","NoxiousAura","AzureMistWatcher","CrimsonMistWatcher","HexerIris","DemonIris","PlaguedIris","AbyssalEyes","SoulRifter","RuinousArcana","RunicRitual","NuclearFuture","CloverEssence","LuckyStrike","LeprechaunsRune","StPixels","EclipseLove","PureLove","AtomicHeart","CupidsArrow","Candynado","Snownado","EtherealSaucer","CandyCaneAura","AuroranTophat","GleamingConstellation","JollyCrown","FrigidCrown","EclipseCrown","OrbitingSerenade","PalpitatingHeart","WebTraps","CacklingMoon","SpectralSummoning","CataclysmicPortal","MarigoldRitual","RunicWinds","MonochromeEclipse","DemonicAcidicWings","DemonicEclipseWings","DemonicInfernalWings","RunicCloverLegs","RetroCloverExplosion","MidasTouch","JellyfishSwarm","HotHawaiianFlowers","TropicalHawaiianFlowers","CoolHawaiianFlowers","SunnySkies","EyeOfHorus","DeepseaAngler","VaporwaveRays","SolarFlareStreak","CelestialStars","HeartSkaters","RelentlessBlizzard","MysticalTree","AmethystAurora","BorealisAurora","PepperimentAurora","SnowflakeAegis","NorthernStarRadiance","GlacialEntrails","HeavenlyCrown","AngelOfDishonor","StellarNebula","HauntedCarousel","AuricShadeRunes","NightShadeRunes","BloodShadeRunes","AncientPenumbra","Wispbound","AlebrijeHorns","BloodyCrown","DuckyWaterFall","SunnyDay","OceanSymphony","BlazingSun","TropicalNatureCrown","LuminescentJellyfish","RetroSunset","SkylineVinyl","EasterEggHunter","LotusRift","OakBlessing","AquamarineBlossom","CrimsonBlossom","LuminousBlossom","VerdantLaurel","MonarchWings","ShamrockShimmer","CircleOfRoses","HealingHalo","SakuraFlowers","LunarFortune","Tixsplosion","SpawnHalo","RingOfFireHalo","BeeShield","GlorpCatInfection","CapeOfPoseidon","Thermocline","EncapsulatedBarbedWires","OozingMoney","AnimalAura","CatRadiance","DoggoAura","EclipseNova","Technotic","ChaoticRadiance","PrismaticWhispers","KoiPond","HornsOfToxicity","HornsOfInferno","HornsOfFrost","KhanOfWinter","Absorption","BoboVortex","CirclingBeams","EliteHelmet","Glow","Glow Solid","Graduation Bear","Grunt","MarkV","MasterChief","MrGray","Nothing","NuclearDoom","OmniMan","Pootis","Sangheili","Spy","Template","bobotower","handtest","sus","testlol"}
 LEGACY_NAMES = {"BlizzardyStorm","MintyExplosion","VerdantStag","GlacialOutburst","XmasBurst","FrigidPerception","SubzeroBurst","AuroranStag","SuspendedLights","ShimmeringCoronet","GlowingTree","AngelicRedemption","WinterChains","AuroraBorealis","GildedStag","FrostFlame","BlizzardyStorm","MintyExplosion","VerdantStag","GlacialOutburst","XmasBurst","FrigidPerception","SubzeroBurst","AuroranStag","SuspendedLights","ShimmeringCoronet","GlowingTree","AngelicRedemption","WinterChains","AuroraBorealis","GildedStag","FrostFlame","WintertideEssence","BionicRejuvination","Adoration","Euphoria","CursedEye","OminousDemise","ToxicInferno","HellfirePortal","BluefirePortal","DarkTendrils","IllusionEyes","BloodMoon","HauntedIridescence","2AnniversaryHat","EclipseLove","PureLove","AtomicHeart","CupidsArrow","Alpha Tester","Alpha Tester","Electrified","CursedHorns","Voltaic","ShinningSparkles","FloweringPetals","CharmingHeart","RedAbduction","FireHorns","GreenAbduction","PrismaticGeyser","Haha","AutumnLeaves","ThunderingStorm","NightLights","RedEnergized","AstralNebula","ParticulateIridescence","IgneousGeyser","PurpleEnergized","RoseateGeyser","BlueAbduction","DarkStar","PrismaticRadiance","CosmicVortex"}
 EMOTE_O_NAMES = {"Addendum","Aerobics","Beg","BoldMarch","Breakdown","BumperKart","California","Caramelldansen","Carlton","Catdown","Clap","ClubDance","Conga","Crabby","CrouchDance","Distraction","Epicaricacy","Facepalm","Flexing","Freestyle","Gmod","GoofyStride","Gyrating","Heaventaker","Hired","Infectious","LittleJiggy","Nostalgia","PBJT","PonPon","Rambunctious","RussianDance","Sit","Sleep","Smug","Stride","SwagWalk","TexasStyle","ZenSerenity","APose","BoogieDown","BringitAround","Catjam","CompanyMan","Fazbore","FlashingLights","Kickback","LineDance","LunarParty","MaracaTime","Mashle","Moonwalk","Nizmoo","ParkerPride","PawsClaws","Popipopi","Robot","RushinAround","SeeTinh","SeriousMarch","Smile","SpookyTime","StarPower","TPose","Banger","GalacticBound","GamingTime","HeliosChariot","Outlaw","StealthyBox","TouchGrass","Writhing","Popular","SightlessDance","Bhop","WinterOf85","Broom","FrightFunk","PumpltUp","Reanimated","RockinStride","Thriller","WerewolfHowl","CampfireDoze","ChristmasBoogie","FlyingSleigh","Marching","Nutcracker","SnowmobileCruise","WindupDance","CyberBroom","DeadBoneStride","GhastlyGrimoire","GhoulishGalleon","HeadlessBaller","Xylobone","ZombieStride","AvariceLounge","IrishJig","AngelicWings","HarpRecital","BobointheBox","IceFishing RudolphMount","SantaMech","SledDrifting","SnowmanConstruction","ToyTrain Ride","WindUpPose","WinterRide","CuerdasDelAlma","GraveRider","HeadlessHorseman","MariachiBand","Scorched Earth","SpiritedAway","AprilShower","GoldRitual","BeachChairLounge","CasualSurfing","LemonadeStand","ManyFans","PoolTime","RowBoat","SummerDays","SerenePerch","CozyChair","FrostDrake","RockingHorse","SkiSpree","WinterMelody","SnowAngel","GargoyleStand","GhostSymphony","LilCthulhu","OogaBooga","WickerBeast","ZombieRaptor","AquaticDaydreamer","AstralMantaRay","ClamClamor","EncapsulatedBubble","FrutigerFloatie","LeapingDolphin","SubmarineRide","SummerLowrider","CoccoonRebirth","HoneyPool","LadybugFlight","LotusSwing","MegaflyJet","SnailMail","AuspiciousWell","DreamyCloud","ValentineComputer","DynastyDrumming","FireworkBlast","ClassicDance","ClassicJeep","ClassicStride","FastFoodDelight","PotionMash","RainingTacos","SkateboardStroll","TurkeyJockey","QueensAppearance","RegalWalk","WingedRoyalSit","GlorpHoverboard","GlorpMech","MountedSeahorse","NeptunesThrone","ShellHermit","AstroSlide","BananaDance","CrabRave","CuddleBearSit","HitTheJackpot","Rocket","Tank","MarchShowcase","DuckyMarch","Sleepybara","TurtleHobble","CatParty","DogParty","FreshFlop","SolarBike","SolarConqueror","SolarSlayer","Boneless","Gangnam","Griddy","LDance","Macarena","HoveringCrystal","FlyingFish","Caffeinated","CatDance","Frolic","OiiaOiia","Wess","Bumblebee","RockefellerStreet","ShubaDance","Twist","M3GANDance","RobotM3GAN"}
 EMOTE_L_NAMES = {"Addendum","Aerobics","AngelicWings","AvariceLounge","BoldMarch","Breakdown","Broom","BumperKart","California","CampfireDoze","Caramelladansen","Carlton","Catdown","ChristmasBoogie","Clap","ClubDance","Conga","Crabby","CrouchDance","Distraction","Epicaricacy","Facepalm","Flexing","FlyingSleigh","Freestyle","FrightFunk","Gmod","GoofyStride","Gyrating","Halp","HarpRecital","Heaventaker","Hired","Infectious","IrishJig","LittleJiggy","MarchShowcase","Marching","Nostalgia","Nutcracker","PBJT","PonPon","PumpItUp","Rambunctious","Reanimated","Rocket","RockinStride","RussianDance","Sit","Sleep","Smug","SnowmobileCruise","Stride","SwagWalk","Tank","Test","TexasStyle","Thriller","WerewolfHowl","WindupDance","ZenSerenity"}
@@ -928,7 +922,6 @@ local function makeListPage(subO,subL,namesO,namesL,kindWord)
 		pg.panels.Legacy.Visible = modes.Legacy and not pg.detailOpen
 		pg.noModes.Visible = (not modes.Overhaul and not modes.Legacy) and not pg.detailOpen
 	end
-	--// REPLACE-МЕНЮ
 	local dW, dH = PAGE_W-PAD*2, PAGE_H-16
 	local detail = create("CanvasGroup",{Name="Detail",BackgroundColor3=DET_BG,BackgroundTransparency=DET_BG_TR,GroupTransparency=1,Visible=false,ZIndex=30,Position=UDim2.fromOffset(PAD,8),Size=UDim2.fromOffset(dW,dH),BorderSizePixel=0},g)
 	corner(detail,24)
@@ -1260,7 +1253,6 @@ local function makeSettingsPage()
 		table.insert(settingsRows,{frame=row,name=name})
 		return row
 	end
-	--// FOV
 	local fovRow = makeRow(SET_FOV_Y,"FOV","Adjust your field of view.","FOV")
 	local fovBox = create("TextBox",{Name="FovInput",Text="",PlaceholderText="70",Font=Enum.Font.GothamBold,TextSize=15,TextColor3=WHITE,PlaceholderColor3=GRAY,ClearTextOnFocus=false,TextXAlignment=Enum.TextXAlignment.Center,BackgroundColor3=INNER_BG,BackgroundTransparency=INNER_TR,Position=UDim2.fromOffset(ROW_W-104,18),Size=UDim2.fromOffset(90,36),BorderSizePixel=0},fovRow)
 	corner(fovBox,18)
@@ -1303,7 +1295,6 @@ local function makeSettingsPage()
 			setFov(fovBox.Text)
 		end
 	end)
-	--// BHOP
 	local bhopRow = makeRow(SET_BHOP_Y,"BHOP","Macro / auto bunny hop / unlimited speed.","BHOP")
 	local dropBtn = create("TextButton",{Text="",AutoButtonColor=false,BackgroundColor3=INNER_BG,BackgroundTransparency=INNER_TR,Position=UDim2.fromOffset(528,16),Size=UDim2.fromOffset(300,44),BorderSizePixel=0},bhopRow)
 	corner(dropBtn,12)
@@ -1377,7 +1368,6 @@ local function makeSettingsPage()
 			tween(dropPanel,.22,{Size=UDim2.fromOffset(300,DROP_FULL_H)},Enum.EasingStyle.Back)
 		end
 	end)
-	--// Keybinds
 	local keyRow = create("Frame",{Name="KeybindsRow",BackgroundColor3=PLATE_BG,BackgroundTransparency=PLATE_TR,Position=UDim2.fromOffset(PAD,SET_KEYS_Y),Size=UDim2.fromOffset(ROW_W,76),BorderSizePixel=0},g)
 	corner(keyRow,16)
 	stroke(keyRow,EDGE_PLATE,1)
@@ -1442,9 +1432,10 @@ local function makeSettingsPage()
 	mkBindBtn(keyRow,"reset","Reset Position",true,false)
 	mkBindBtn(bhopKeyRow,"bhop","BHOP Trigger",true,false,300)
 	if isMobile then
-		-- на телефоне плашки кейбиндов не нужны: триггер = прозрачная зона на кнопке прыжка
-		keyRow.Visible = false
-		bhopKeyRow.Visible = false
+		pcall(function()
+			keyRow.Visible = false
+			bhopKeyRow.Visible = false
+		end)
 	end
 	pg.closeDrop = closeDrop
 	pg.applyModes = applyModes
@@ -1530,7 +1521,6 @@ local function forceJump(hum)
 	hum.Jump = true
 	pcall(function() hum:ChangeState(Enum.HumanoidStateType.Jumping) end)
 end
--- мобильный "тап-спам": бесконечные нажатия прыжка с интервалом 0.05с
 local lastMobileTap = 0
 local function mobileTap(hum)
 	local now = os.clock()
@@ -1555,7 +1545,6 @@ local bhopConn = RunService.Heartbeat:Connect(function()
 	local forced = false
 	if not busy then
 		if isMobile then
-			-- зона перехватывает палец только в hold-режимах
 			if zone then
 				zone.Enabled = (bhopMode == "Macro BHOP" or bhopMode == "Hold Unlimited Speed")
 			end
@@ -1711,7 +1700,7 @@ UIS.InputEnded:Connect(function(i)
 	end
 end)
 
---================= СКРЫТИЕ ПО БИНДУ (FIX: снимок каждый раз + resync) =================
+--================= СКРЫТИЕ (снимок каждый раз + resync) =================
 local hidden = false
 local hiding = false
 local FADE_DUR = 0.25
@@ -1812,135 +1801,148 @@ minBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
---================= ORB (только на мобильных) =================
+--================= ORB (mobile, изолирован) =================
 if isMobile then
-	local orbGui = create("ScreenGui",{Name="EvadeMobileOrb",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=49},playerGui)
-	local orb = create("TextButton",{Name="Orb",Text="",AutoButtonColor=false,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-12,1,-12),Size=UDim2.fromOffset(44,44),BackgroundColor3=Color3.fromRGB(20,20,20),BackgroundTransparency=.25,BorderSizePixel=0},orbGui)
-	corner(orb,22)
-	stroke(orb,.4,1.5)
-	icon(orb,"OrbIcon",11,11,22,"Logo")
-	mobileOrb = orb
-	orb.Visible = false
-	local orbDrag = false
-	local orbMoved = 0
-	local oStart = nil
-	local oPos = nil
-	orb.InputBegan:Connect(function(inp)
-		if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-			orbDrag = true
-			orbMoved = 0
-			oStart = inp.Position
-			oPos = orb.Position
-		end
-	end)
-	UIS.InputChanged:Connect(function(inp)
-		if orbDrag then
-			if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseMovement then
-				local d = inp.Position - oStart
-				if d.Magnitude > orbMoved then
-					orbMoved = d.Magnitude
-				end
-				orb.Position = UDim2.new(oPos.X.Scale, oPos.X.Offset + d.X, oPos.Y.Scale, oPos.Y.Offset + d.Y)
+	pcall(function()
+		local orbGui = create("ScreenGui",{Name="EvadeMobileOrb",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=49},playerGui)
+		local orb = create("TextButton",{Name="Orb",Text="",AutoButtonColor=false,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-12,1,-12),Size=UDim2.fromOffset(44,44),BackgroundColor3=Color3.fromRGB(20,20,20),BackgroundTransparency=.25,BorderSizePixel=0},orbGui)
+		corner(orb,22)
+		stroke(orb,.4,1.5)
+		icon(orb,"OrbIcon",11,11,22,"Logo")
+		mobileOrb = orb
+		orb.Visible = false
+		local orbDrag = false
+		local orbMoved = 0
+		local oStart = nil
+		local oPos = nil
+		orb.InputBegan:Connect(function(inp)
+			if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+				orbDrag = true
+				orbMoved = 0
+				oStart = inp.Position
+				oPos = orb.Position
 			end
-		end
-	end)
-	UIS.InputEnded:Connect(function(inp)
-		if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-			orbDrag = false
-		end
-	end)
-	orb.MouseButton1Click:Connect(function()
-		if orbMoved > 10 then
-			orbMoved = 0
-			return
-		end
-		toggleHide()
-	end)
-	gui.Destroying:Connect(function()
-		orbGui:Destroy()
+		end)
+		UIS.InputChanged:Connect(function(inp)
+			if orbDrag then
+				if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseMovement then
+					local d = inp.Position - oStart
+					if d.Magnitude > orbMoved then
+						orbMoved = d.Magnitude
+					end
+					orb.Position = UDim2.new(oPos.X.Scale, oPos.X.Offset + d.X, oPos.Y.Scale, oPos.Y.Offset + d.Y)
+				end
+			end
+		end)
+		UIS.InputEnded:Connect(function(inp)
+			if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+				orbDrag = false
+			end
+		end)
+		orb.MouseButton1Click:Connect(function()
+			if orbMoved > 10 then
+				orbMoved = 0
+				return
+			end
+			toggleHide()
+		end)
+		gui.Destroying:Connect(function()
+			orbGui:Destroy()
+		end)
 	end)
 end
 
---================= JUMP ZONE (mobile): прозрачный триггер поверх кнопки прыжка =================
+--================= JUMP ZONE (mobile, изолирован + итеративный поиск) =================
 if isMobile then
-	local zoneGuiLocal = create("ScreenGui",{Name="EvadeJumpZone",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=45},playerGui)
-	zoneGui = zoneGuiLocal
-	zone = create("TextButton",{Name="JumpZone",Text="",AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-24,1,-24),Size=UDim2.fromOffset(120,120),BorderSizePixel=0,Enabled=false},zoneGui)
-	corner(zone,60)
-	-- ОБВОДКА для отладки: по ней видно, где зона и попала ли она в кнопку прыжка.
-	-- Чтобы скрыть потом: поставь прозрачность 1 вместо 0.15
-	stroke(zone,0.15,2)
-	zone.InputBegan:Connect(function(inp)
-		if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-			zoneHeld = true
-			local ch = Players.LocalPlayer.Character
-			local h = ch and ch:FindFirstChildOfClass("Humanoid")
-			if h then
-				h.Jump = true
+	pcall(function()
+		local zoneGuiLocal = create("ScreenGui",{Name="EvadeJumpZone",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=45},playerGui)
+		zoneGui = zoneGuiLocal
+		zone = create("TextButton",{Name="JumpZone",Text="",AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-24,1,-24),Size=UDim2.fromOffset(120,120),BorderSizePixel=0,Enabled=false},zoneGui)
+		corner(zone,60)
+		stroke(zone,0.15,2)
+		zone.InputBegan:Connect(function(inp)
+			if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+				zoneHeld = true
+				local ch = Players.LocalPlayer.Character
+				local h = ch and ch:FindFirstChildOfClass("Humanoid")
+				if h then
+					h.Jump = true
+				end
 			end
-		end
-	end)
-	zone.InputEnded:Connect(function(inp)
-		if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-			zoneHeld = false
-		end
-	end)
-	-- ищем родную кнопку прыжка Roblox и садим зону точно поверх неё
-	local function findJumpButton()
-		local cg = game:GetService("CoreGui")
-		local function scan(obj)
-			for _, ch in ipairs(obj:GetChildren()) do
-				if (ch.Name == "JumpButton" or ch.Name == "TouchJump" or ch.Name == "Jump") and ch:IsA("GuiObject") then
-					return ch
+		end)
+		zone.InputEnded:Connect(function(inp)
+			if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+				zoneHeld = false
+			end
+		end)
+		local function findJumpButton()
+			local cg = game:GetService("CoreGui")
+			local queue = {cg}
+			local depth = 0
+			local guard = 0
+			while #queue > 0 and depth < 12 and guard < 4000 do
+				local nextQueue = {}
+				for _, node in ipairs(queue) do
+					local okCh, children = pcall(function() return node:GetChildren() end)
+					if okCh then
+						for _, ch in ipairs(children) do
+							guard = guard + 1
+							if (ch.Name=="JumpButton" or ch.Name=="TouchJump" or ch.Name=="Jump") and ch:IsA("GuiObject") then
+								return ch
+							end
+							if ch:IsA("Folder") or ch:IsA("GuiObject") or ch:IsA("LayerCollector") then
+								table.insert(nextQueue, ch)
+							end
+						end
+					end
 				end
-				local r = scan(ch)
-				if r then
-					return r
-				end
+				queue = nextQueue
+				depth = depth + 1
 			end
 			return nil
 		end
-		return scan(cg)
-	end
-	task.spawn(function()
-		while zoneGui and zoneGui.Parent do
-			local ok, jb = pcall(findJumpButton)
-			if ok and jb and jb.AbsoluteSize.X > 10 then
-				local pad = 6
-				zone.AnchorPoint = Vector2.new(0,0)
-				zone.Position = UDim2.fromOffset(jb.AbsolutePosition.X - pad, jb.AbsolutePosition.Y - pad)
-				zone.Size = UDim2.fromOffset(jb.AbsoluteSize.X + pad*2, jb.AbsoluteSize.Y + pad*2)
+		task.spawn(function()
+			while zoneGui and zoneGui.Parent do
+				local ok, jb = pcall(findJumpButton)
+				if ok and jb and jb.AbsoluteSize.X > 10 then
+					local pad = 6
+					zone.AnchorPoint = Vector2.new(0,0)
+					zone.Position = UDim2.fromOffset(jb.AbsolutePosition.X - pad, jb.AbsolutePosition.Y - pad)
+					zone.Size = UDim2.fromOffset(jb.AbsoluteSize.X + pad*2, jb.AbsoluteSize.Y + pad*2)
+				end
+				task.wait(0.4)
 			end
-			task.wait(0.4)
-		end
-	end)
-	gui.Destroying:Connect(function()
-		zoneGuiLocal:Destroy()
+		end)
+		gui.Destroying:Connect(function()
+			zoneGuiLocal:Destroy()
+		end)
 	end)
 end
 
---================= MOBILE (крупные кнопки окна) =================
+--================= MOBILE (крупные кнопки, изолировано) =================
 if isMobile then
-	minBtn.Size = UDim2.fromOffset(40,36)
-	minBtn.Position = UDim2.fromOffset(W-150,8)
-	maxVisual.Position = UDim2.fromOffset(W-104,8)
-	maxVisual.Size = UDim2.fromOffset(40,36)
-	closeBtn.Size = UDim2.fromOffset(40,36)
-	closeBtn.Position = UDim2.fromOffset(W-56,8)
-	for _,c in ipairs(minBtn:GetChildren()) do
-		if c:IsA("Frame") then
-			c:Destroy()
+	pcall(function()
+		minBtn.Size = UDim2.fromOffset(40,36)
+		minBtn.Position = UDim2.fromOffset(W-150,8)
+		maxVisual.Position = UDim2.fromOffset(W-104,8)
+		maxVisual.Size = UDim2.fromOffset(40,36)
+		closeBtn.Size = UDim2.fromOffset(40,36)
+		closeBtn.Position = UDim2.fromOffset(W-56,8)
+		for _,c in ipairs(minBtn:GetChildren()) do
+			if c:IsA("Frame") then
+				c:Destroy()
+			end
 		end
-	end
-	bar(minBtn,20,18,16,2.5,0)
-	for _,c in ipairs(closeBtn:GetChildren()) do
-		if c:IsA("Frame") then
-			c:Destroy()
+		bar(minBtn,20,18,16,2.5,0)
+		for _,c in ipairs(closeBtn:GetChildren()) do
+			if c:IsA("Frame") then
+				c:Destroy()
+			end
 		end
-	end
-	bar(closeBtn,20,18,18,2.5,45)
-	bar(closeBtn,20,18,18,2.5,-45)
-	maxSq.Size = UDim2.fromOffset(14,14)
+		bar(closeBtn,20,18,18,2.5,45)
+		bar(closeBtn,20,18,18,2.5,-45)
+		maxSq.Size = UDim2.fromOffset(14,14)
+	end)
 end
 
 --================= ГЛОБАЛЬНЫЕ КЕЙБИНДЫ =================
