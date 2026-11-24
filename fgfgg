@@ -1546,7 +1546,7 @@ local bhopConn = RunService.Heartbeat:Connect(function()
 	if not busy then
 		if isMobile then
 			if zone then
-				zone.Enabled = (bhopMode == "Macro BHOP" or bhopMode == "Hold Unlimited Speed")
+				zone.Visible = (bhopMode == "Macro BHOP" or bhopMode == "Hold Unlimited Speed")
 			end
 			if bhopMode == "Macro BHOP" then
 				spam = zoneHeld
@@ -1572,7 +1572,9 @@ local bhopConn = RunService.Heartbeat:Connect(function()
 	if spam then
 		bhopSpamming = true
 		if isMobile then
-			mobileTap(hum)
+			if hum.FloorMaterial ~= Enum.Material.Air then
+				forceJump(hum)
+			end
 		else
 			if not spaceMacro(hum) then
 				hum.Jump = true
@@ -1852,51 +1854,62 @@ if isMobile then
 	end)
 end
 
---================= JUMP ZONE (mobile, изолирован + итеративный поиск) =================
+--================= JUMP ZONE (mobile) =================
 if isMobile then
-	pcall(function()
+	local okZ, errZ = pcall(function()
 		local zoneGuiLocal = create("ScreenGui",{Name="EvadeJumpZone",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=45},playerGui)
 		zoneGui = zoneGuiLocal
-		zone = create("TextButton",{Name="JumpZone",Text="",AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-24,1,-24),Size=UDim2.fromOffset(120,120),BorderSizePixel=0,Enabled=false},zoneGui)
+		zone = create("TextButton",{Name="JumpZone",Text="",AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-24,1,-24),Size=UDim2.fromOffset(120,120),BorderSizePixel=0},zoneGui)
 		corner(zone,60)
 		stroke(zone,0.15,2)
+		zone.Visible = false
 		zone.InputBegan:Connect(function(inp)
-			if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+			if inp.UserInputType==Enum.UserInputType.Touch or inp.UserInputType==Enum.UserInputType.MouseButton1 then
 				zoneHeld = true
 				local ch = Players.LocalPlayer.Character
 				local h = ch and ch:FindFirstChildOfClass("Humanoid")
 				if h then
-					h.Jump = true
+					forceJump(h)
 				end
 			end
 		end)
 		zone.InputEnded:Connect(function(inp)
-			if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+			if inp.UserInputType==Enum.UserInputType.Touch or inp.UserInputType==Enum.UserInputType.MouseButton1 then
 				zoneHeld = false
 			end
 		end)
 		local function findJumpButton()
 			local cg = game:GetService("CoreGui")
+			local tg = cg:FindFirstChild("TouchGui")
+			if tg then
+				local tcf = tg:FindFirstChild("TouchControlFrame")
+				if tcf then
+					local jb = tcf:FindFirstChild("JumpButton")
+					if jb and jb:IsA("GuiObject") then
+						return jb
+					end
+				end
+			end
 			local queue = {cg}
 			local depth = 0
 			local guard = 0
-			while #queue > 0 and depth < 12 and guard < 4000 do
-				local nextQueue = {}
+			while #queue > 0 and depth < 16 and guard < 20000 do
+				local nextQ = {}
 				for _, node in ipairs(queue) do
-					local okCh, children = pcall(function() return node:GetChildren() end)
-					if okCh then
+					local okC, children = pcall(function() return node:GetChildren() end)
+					if okC then
 						for _, ch in ipairs(children) do
 							guard = guard + 1
 							if (ch.Name=="JumpButton" or ch.Name=="TouchJump" or ch.Name=="Jump") and ch:IsA("GuiObject") then
 								return ch
 							end
 							if ch:IsA("Folder") or ch:IsA("GuiObject") or ch:IsA("LayerCollector") then
-								table.insert(nextQueue, ch)
+								table.insert(nextQ, ch)
 							end
 						end
 					end
 				end
-				queue = nextQueue
+				queue = nextQ
 				depth = depth + 1
 			end
 			return nil
@@ -1917,6 +1930,9 @@ if isMobile then
 			zoneGuiLocal:Destroy()
 		end)
 	end)
+	if not okZ then
+		warn("[rg] jump zone error: " .. tostring(errZ))
+	end
 end
 
 --================= MOBILE (крупные кнопки, изолировано) =================
