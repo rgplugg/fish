@@ -89,9 +89,16 @@ LEGACY_NAMES = {"BlizzardyStorm","MintyExplosion","VerdantStag","GlacialOutburst
 EMOTE_O_NAMES = {"Addendum","Aerobics","Beg","BoldMarch","Breakdown","BumperKart","California","Caramelldansen","Carlton","Catdown","Clap","ClubDance","Conga","Crabby","CrouchDance","Distraction","Epicaricacy","Facepalm","Flexing","Freestyle","Gmod","GoofyStride","Gyrating","Heaventaker","Hired","Infectious","LittleJiggy","Nostalgia","PBJT","PonPon","Rambunctious","RussianDance","Sit","Sleep","Smug","Stride","SwagWalk","TexasStyle","ZenSerenity","APose","BoogieDown","BringitAround","Catjam","CompanyMan","Fazbore","FlashingLights","Kickback","LineDance","LunarParty","MaracaTime","Mashle","Moonwalk","Nizmoo","ParkerPride","PawsClaws","Popipopi","Robot","RushinAround","SeeTinh","SeriousMarch","Smile","SpookyTime","StarPower","TPose","Banger","GalacticBound","GamingTime","HeliosChariot","Outlaw","StealthyBox","TouchGrass","Writhing","Popular","SightlessDance","Bhop","WinterOf85","Broom","FrightFunk","PumpltUp","Reanimated","RockinStride","Thriller","WerewolfHowl","CampfireDoze","ChristmasBoogie","FlyingSleigh","Marching","Nutcracker","SnowmobileCruise","WindupDance","CyberBroom","DeadBoneStride","GhastlyGrimoire","GhoulishGalleon","HeadlessBaller","Xylobone","ZombieStride","AvariceLounge","IrishJig","AngelicWings","HarpRecital","BobointheBox","IceFishing RudolphMount","SantaMech","SledDrifting","SnowmanConstruction","ToyTrain Ride","WindUpPose","WinterRide","CuerdasDelAlma","GraveRider","HeadlessHorseman","MariachiBand","Scorched Earth","SpiritedAway","AprilShower","GoldRitual","BeachChairLounge","CasualSurfing","LemonadeStand","ManyFans","PoolTime","RowBoat","SummerDays","SerenePerch","CozyChair","FrostDrake","RockingHorse","SkiSpree","WinterMelody","SnowAngel","GargoyleStand","GhostSymphony","LilCthulhu","OogaBooga","WickerBeast","ZombieRaptor","AquaticDaydreamer","AstralMantaRay","ClamClamor","EncapsulatedBubble","FrutigerFloatie","LeapingDolphin","SubmarineRide","SummerLowrider","CoccoonRebirth","HoneyPool","LadybugFlight","LotusSwing","MegaflyJet","SnailMail","AuspiciousWell","DreamyCloud","ValentineComputer","DynastyDrumming","FireworkBlast","ClassicDance","ClassicJeep","ClassicStride","FastFoodDelight","PotionMash","RainingTacos","SkateboardStroll","TurkeyJockey","QueensAppearance","RegalWalk","WingedRoyalSit","GlorpHoverboard","GlorpMech","MountedSeahorse","NeptunesThrone","ShellHermit","AstroSlide","BananaDance","CrabRave","CuddleBearSit","HitTheJackpot","Rocket","Tank","MarchShowcase","DuckyMarch","Sleepybara","TurtleHobble","CatParty","DogParty","FreshFlop","SolarBike","SolarConqueror","SolarSlayer","Boneless","Gangnam","Griddy","LDance","Macarena","HoveringCrystal","FlyingFish","Caffeinated","CatDance","Frolic","OiiaOiia","Wess","Bumblebee","RockefellerStreet","ShubaDance","Twist","M3GANDance","RobotM3GAN"}
 EMOTE_L_NAMES = {"Addendum","Aerobics","AngelicWings","AvariceLounge","BoldMarch","Breakdown","Broom","BumperKart","California","CampfireDoze","Caramelladansen","Carlton","Catdown","ChristmasBoogie","Clap","ClubDance","Conga","Crabby","CrouchDance","Distraction","Epicaricacy","Facepalm","Flexing","FlyingSleigh","Freestyle","FrightFunk","Gmod","GoofyStride","Gyrating","Halp","HarpRecital","Heaventaker","Hired","Infectious","IrishJig","LittleJiggy","MarchShowcase","Marching","Nostalgia","Nutcracker","PBJT","PonPon","PumpItUp","Rambunctious","Reanimated","Rocket","RockinStride","RussianDance","Sit","Sleep","Smug","SnowmobileCruise","Stride","SwagWalk","Tank","Test","TexasStyle","Thriller","WerewolfHowl","WindupDance","ZenSerenity"}
 
---================= SNAP + SWAP + RESET (ФОНОВЫЙ) =================
+
+for _, oldName in ipairs({"_rg__snap"}) do
+	local old = RS:FindFirstChild(oldName)
+	while old do
+		old:Destroy()
+		old = RS:FindFirstChild(oldName)
+	end
+end
 local snapRoot = Instance.new("Folder")
-snapRoot.Name = "__yupi_snap"
+snapRoot.Name = "_rg__snap"
 snapRoot.Parent = RS
 local eSnaps, eRefs, lSnaps, bSnaps, bRefs, effSnaps, effRefs, seenSnap = {}, {}, {}, {}, {}, {}, {}, {}
 local function nav(root, path)
@@ -940,7 +947,7 @@ local function makeListPage(subO,subL,namesO,namesL,kindWord)
 	corner(badge,12)
 	stroke(badge,.65,1)
 	local badgeLbl = label(badge,"",0,0,110,24,10,Enum.Font.GothamBold,WHITE,Enum.TextXAlignment.Center)
-	local applyBtn = create("TextButton",{Name="Apply",Text="APPLY",AutoButtonColor=false,Font=Enum.Font.GothamBold,TextSize=13,TextColor3=WHITE,BackgroundColor3=Color3.fromRGB(30,30,30),BackgroundTransparency=.12,Position=UDim2.fromOffset(dW-32-16-120,20),Size=UDim2.fromOffset(120,44),BorderSizePixel=0},head)
+	local applyBtn = create("TextButton",{Name="Apply",Text="APPLY",AutoButtonColor=false,Font=Enum.Font.GothamBold,TextSize=13,TextColor3=WHITE,BackgroundColor3=Color3.fromRGB(30,30,30),BackgroundTransparency=.12,Position=UDim2.fromOffset(dW-168,20),Size=UDim2.fromOffset(120,44),BorderSizePixel=0},head)
 	corner(applyBtn,14)
 	local applyStroke = stroke(applyBtn,APPLY_EDGE,1.3)
 	applyBtn.MouseEnter:Connect(function()
@@ -951,16 +958,17 @@ local function makeListPage(subO,subL,namesO,namesL,kindWord)
 		tween(applyBtn,.18,{BackgroundTransparency=.12})
 		tween(applyStroke,.18,{Transparency=APPLY_EDGE})
 	end)
-	local reloadBtnD = create("TextButton",{Name="Reload",Text="RELOAD",AutoButtonColor=false,Font=Enum.Font.GothamBold,TextSize=13,TextColor3=WHITE,BackgroundColor3=Color3.fromRGB(30,30,30),BackgroundTransparency=.12,Position=UDim2.fromOffset(dW-32-16-120,72),Size=UDim2.fromOffset(120,44),BorderSizePixel=0},head)
-	corner(reloadBtnD,14)
-	local reloadStroke = stroke(reloadBtnD,.75,1)
-	reloadBtnD.MouseEnter:Connect(function()
-		tween(reloadBtnD,.15,{BackgroundTransparency=.04})
-		tween(reloadStroke,.15,{Transparency=.5})
+	-- REFRESH: СЛЕВА от APPLY, чуть меньше (100x36 против 120x44), по центру её высоты
+	local refreshBtn = create("TextButton",{Name="Refresh",Text="REFRESH",AutoButtonColor=false,Font=Enum.Font.GothamBold,TextSize=12,TextColor3=WHITE,BackgroundColor3=Color3.fromRGB(30,30,30),BackgroundTransparency=.12,Position=UDim2.fromOffset(dW-280,24),Size=UDim2.fromOffset(100,36),BorderSizePixel=0},head)
+	corner(refreshBtn,12)
+	local refreshStroke = stroke(refreshBtn,.75,1)
+	refreshBtn.MouseEnter:Connect(function()
+		tween(refreshBtn,.15,{BackgroundTransparency=.04})
+		tween(refreshStroke,.15,{Transparency=.5})
 	end)
-	reloadBtnD.MouseLeave:Connect(function()
-		tween(reloadBtnD,.18,{BackgroundTransparency=.12})
-		tween(reloadStroke,.18,{Transparency=.75})
+	refreshBtn.MouseLeave:Connect(function()
+		tween(refreshBtn,.18,{BackgroundTransparency=.12})
+		tween(refreshStroke,.18,{Transparency=.75})
 	end)
 	local switchBtn = create("TextButton",{Name="Switch",Text="",AutoButtonColor=false,BackgroundColor3=DET_INNER,BackgroundTransparency=.15,Position=UDim2.fromOffset(16,116),Size=UDim2.fromOffset(dW-32,46),BorderSizePixel=0},detail)
 	corner(switchBtn,14)
@@ -1108,10 +1116,10 @@ local function makeListPage(subO,subL,namesO,namesL,kindWord)
 			end
 		end)
 	end)
-	reloadBtnD.MouseButton1Click:Connect(function()
-		tween(reloadBtnD,.1,{BackgroundTransparency=.28})
+	refreshBtn.MouseButton1Click:Connect(function()
+		tween(refreshBtn,.1,{BackgroundTransparency=.28})
 		task.delay(.12, function()
-			tween(reloadBtnD,.2,{BackgroundTransparency=.12})
+			tween(refreshBtn,.2,{BackgroundTransparency=.12})
 		end)
 		local key = currentName .. currentVersion
 		local swap = appliedSwaps[key]
@@ -1119,12 +1127,12 @@ local function makeListPage(subO,subL,namesO,namesL,kindWord)
 			restoreSingle(swap.name, swap.version)
 			appliedSwaps[key] = nil
 		end
-		reloadBtnD.Text = "RESTORED"
-		reloadBtnD.TextColor3 = Color3.fromRGB(80,220,120)
+		refreshBtn.Text = "RESTORED"
+		refreshBtn.TextColor3 = Color3.fromRGB(80,220,120)
 		task.delay(1.8, function()
-			if reloadBtnD and reloadBtnD.Parent then
-				reloadBtnD.Text = "RELOAD"
-				reloadBtnD.TextColor3 = WHITE
+			if refreshBtn and refreshBtn.Parent then
+				refreshBtn.Text = "REFRESH"
+				refreshBtn.TextColor3 = WHITE
 			end
 		end)
 	end)
@@ -1779,52 +1787,55 @@ minBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
---================= ORB (создаётся ВСЕГДА: способ открыть меню без клавиатуры) =================
-local orbGui = create("ScreenGui",{Name="EvadeMobileOrb",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=49},playerGui)
-local orb = create("TextButton",{Name="Orb",Text="",AutoButtonColor=false,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-16,1,-16),Size=UDim2.fromOffset(56,56),BackgroundColor3=Color3.fromRGB(20,20,20),BackgroundTransparency=.25,BorderSizePixel=0},orbGui)
-corner(orb,28)
-stroke(orb,.4,1.5)
-icon(orb,"OrbIcon",14,14,28,"Logo")
-mobileOrb = orb
-orb.Visible = false
-local orbDrag = false
-local orbMoved = 0
-local oStart = nil
-local oPos = nil
-orb.InputBegan:Connect(function(inp)
-	if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-		orbDrag = true
-		orbMoved = 0
-		oStart = inp.Position
-		oPos = orb.Position
-	end
-end)
-UIS.InputChanged:Connect(function(inp)
-	if orbDrag then
-		if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseMovement then
-			local d = inp.Position - oStart
-			if d.Magnitude > orbMoved then
-				orbMoved = d.Magnitude
-			end
-			orb.Position = UDim2.new(oPos.X.Scale, oPos.X.Offset + d.X, oPos.Y.Scale, oPos.Y.Offset + d.Y)
+--================= ORB (только на мобильных: на ПК меню возвращается биндом hide) =================
+if isMobile then
+	local orbGui = create("ScreenGui",{Name="EvadeMobileOrb",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=49},playerGui)
+	local orb = create("TextButton",{Name="Orb",Text="",AutoButtonColor=false,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-16,1,-16),Size=UDim2.fromOffset(56,56),BackgroundColor3=Color3.fromRGB(20,20,20),BackgroundTransparency=.25,BorderSizePixel=0},orbGui)
+	corner(orb,28)
+	stroke(orb,.4,1.5)
+	icon(orb,"OrbIcon",14,14,28,"Logo")
+	mobileOrb = orb
+	orb.Visible = false
+
+	local orbDrag = false
+	local orbMoved = 0
+	local oStart = nil
+	local oPos = nil
+	orb.InputBegan:Connect(function(inp)
+		if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+			orbDrag = true
+			orbMoved = 0
+			oStart = inp.Position
+			oPos = orb.Position
 		end
-	end
-end)
-UIS.InputEnded:Connect(function(inp)
-	if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-		orbDrag = false
-	end
-end)
-orb.MouseButton1Click:Connect(function()
-	if orbMoved > 10 then
-		orbMoved = 0
-		return
-	end
-	toggleHide()
-end)
-gui.Destroying:Connect(function()
-	orbGui:Destroy()
-end)
+	end)
+	UIS.InputChanged:Connect(function(inp)
+		if orbDrag then
+			if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseMovement then
+				local d = inp.Position - oStart
+				if d.Magnitude > orbMoved then
+					orbMoved = d.Magnitude
+				end
+				orb.Position = UDim2.new(oPos.X.Scale, oPos.X.Offset + d.X, oPos.Y.Scale, oPos.Y.Offset + d.Y)
+			end
+		end
+	end)
+	UIS.InputEnded:Connect(function(inp)
+		if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+			orbDrag = false
+		end
+	end)
+	orb.MouseButton1Click:Connect(function()
+		if orbMoved > 10 then
+			orbMoved = 0
+			return
+		end
+		toggleHide()
+	end)
+	gui.Destroying:Connect(function()
+		orbGui:Destroy()
+	end)
+end
 
 --================= MOBILE (крупные кнопки окна) =================
 if isMobile then
