@@ -1,13 +1,17 @@
---// EVADE menu replica v31 (LocalScript / executor) + MOBILE + FAST SNAP
+--// EVADE menu replica v32 (LocalScript / executor) + MOBILE + ORB FIX
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local RS = game:GetService("ReplicatedStorage")
 
---// MOBILE: определяем телефон (тач есть, мыши и клавиатуры нет)
-local isMobile = UIS.TouchEnabled and not UIS.MouseEnabled and not UIS.KeyboardEnabled
+--// MOBILE: телефон = есть тач (остальное не проверяем, оно врёт на Android)
+local isMobile = UIS.TouchEnabled
 local mobileOrb = nil
+task.spawn(function()
+	task.wait(1)
+	print("[yupi] Touch:", UIS.TouchEnabled, "Mouse:", UIS.MouseEnabled, "Keyboard:", UIS.KeyboardEnabled, "isMobile:", isMobile)
+end)
 
 local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 for _, child in ipairs(playerGui:GetChildren()) do
@@ -85,7 +89,7 @@ LEGACY_NAMES = {"BlizzardyStorm","MintyExplosion","VerdantStag","GlacialOutburst
 EMOTE_O_NAMES = {"Addendum","Aerobics","Beg","BoldMarch","Breakdown","BumperKart","California","Caramelldansen","Carlton","Catdown","Clap","ClubDance","Conga","Crabby","CrouchDance","Distraction","Epicaricacy","Facepalm","Flexing","Freestyle","Gmod","GoofyStride","Gyrating","Heaventaker","Hired","Infectious","LittleJiggy","Nostalgia","PBJT","PonPon","Rambunctious","RussianDance","Sit","Sleep","Smug","Stride","SwagWalk","TexasStyle","ZenSerenity","APose","BoogieDown","BringitAround","Catjam","CompanyMan","Fazbore","FlashingLights","Kickback","LineDance","LunarParty","MaracaTime","Mashle","Moonwalk","Nizmoo","ParkerPride","PawsClaws","Popipopi","Robot","RushinAround","SeeTinh","SeriousMarch","Smile","SpookyTime","StarPower","TPose","Banger","GalacticBound","GamingTime","HeliosChariot","Outlaw","StealthyBox","TouchGrass","Writhing","Popular","SightlessDance","Bhop","WinterOf85","Broom","FrightFunk","PumpltUp","Reanimated","RockinStride","Thriller","WerewolfHowl","CampfireDoze","ChristmasBoogie","FlyingSleigh","Marching","Nutcracker","SnowmobileCruise","WindupDance","CyberBroom","DeadBoneStride","GhastlyGrimoire","GhoulishGalleon","HeadlessBaller","Xylobone","ZombieStride","AvariceLounge","IrishJig","AngelicWings","HarpRecital","BobointheBox","IceFishing RudolphMount","SantaMech","SledDrifting","SnowmanConstruction","ToyTrain Ride","WindUpPose","WinterRide","CuerdasDelAlma","GraveRider","HeadlessHorseman","MariachiBand","Scorched Earth","SpiritedAway","AprilShower","GoldRitual","BeachChairLounge","CasualSurfing","LemonadeStand","ManyFans","PoolTime","RowBoat","SummerDays","SerenePerch","CozyChair","FrostDrake","RockingHorse","SkiSpree","WinterMelody","SnowAngel","GargoyleStand","GhostSymphony","LilCthulhu","OogaBooga","WickerBeast","ZombieRaptor","AquaticDaydreamer","AstralMantaRay","ClamClamor","EncapsulatedBubble","FrutigerFloatie","LeapingDolphin","SubmarineRide","SummerLowrider","CoccoonRebirth","HoneyPool","LadybugFlight","LotusSwing","MegaflyJet","SnailMail","AuspiciousWell","DreamyCloud","ValentineComputer","DynastyDrumming","FireworkBlast","ClassicDance","ClassicJeep","ClassicStride","FastFoodDelight","PotionMash","RainingTacos","SkateboardStroll","TurkeyJockey","QueensAppearance","RegalWalk","WingedRoyalSit","GlorpHoverboard","GlorpMech","MountedSeahorse","NeptunesThrone","ShellHermit","AstroSlide","BananaDance","CrabRave","CuddleBearSit","HitTheJackpot","Rocket","Tank","MarchShowcase","DuckyMarch","Sleepybara","TurtleHobble","CatParty","DogParty","FreshFlop","SolarBike","SolarConqueror","SolarSlayer","Boneless","Gangnam","Griddy","LDance","Macarena","HoveringCrystal","FlyingFish","Caffeinated","CatDance","Frolic","OiiaOiia","Wess","Bumblebee","RockefellerStreet","ShubaDance","Twist","M3GANDance","RobotM3GAN"}
 EMOTE_L_NAMES = {"Addendum","Aerobics","AngelicWings","AvariceLounge","BoldMarch","Breakdown","Broom","BumperKart","California","CampfireDoze","Caramelladansen","Carlton","Catdown","ChristmasBoogie","Clap","ClubDance","Conga","Crabby","CrouchDance","Distraction","Epicaricacy","Facepalm","Flexing","FlyingSleigh","Freestyle","FrightFunk","Gmod","GoofyStride","Gyrating","Halp","HarpRecital","Heaventaker","Hired","Infectious","IrishJig","LittleJiggy","MarchShowcase","Marching","Nostalgia","Nutcracker","PBJT","PonPon","PumpItUp","Rambunctious","Reanimated","Rocket","RockinStride","RussianDance","Sit","Sleep","Smug","SnowmobileCruise","Stride","SwagWalk","Tank","Test","TexasStyle","Thriller","WerewolfHowl","WindupDance","ZenSerenity"}
 
---================= SNAP + SWAP + RESET (ФОНОВЫЙ, НЕ БЛОКИРУЕТ GUI) =================
+--================= SNAP + SWAP + RESET (ФОНОВЫЙ) =================
 local snapRoot = Instance.new("Folder")
 snapRoot.Name = "__yupi_snap"
 snapRoot.Parent = RS
@@ -659,7 +663,7 @@ local function matches(a,kc)
 	return kc.Name == kb
 end
 
---================= ОКНО + SCALE =================
+--================= ОКНО + SCALE (всегда вписываем в экран) =================
 local gui = create("ScreenGui",{Name="EvadeMenu",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=50,ZIndexBehavior=Enum.ZIndexBehavior.Sibling},playerGui)
 local win = create("Frame",{Name="Window",AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5),Size=UDim2.fromOffset(W,H),BackgroundColor3=WHITE,BackgroundTransparency=.06,BorderSizePixel=0,ClipsDescendants=true},gui)
 local winCorner = corner(win,22)
@@ -669,11 +673,8 @@ local root = create("Frame",{Name="ScaleFrame",Size=UDim2.fromOffset(W,H),Backgr
 local uiScaleObj = create("UIScale",{Scale=1},root)
 local function computeScale()
 	local cam = workspace.CurrentCamera
-	local v = cam and cam.ViewportSize or Vector2.new(SCALE_BASE_W,SCALE_BASE_H)
-	if isMobile then
-		return math.clamp(math.min(v.X/(W+40), v.Y/(H+40)), 0.25, 1)
-	end
-	return math.clamp(math.min(v.X/SCALE_BASE_W, v.Y/SCALE_BASE_H), SCALE_MIN, SCALE_MAX)
+	local v = cam and cam.ViewportSize or Vector2.new(SCALE_BASE_W, SCALE_BASE_H)
+	return math.clamp(math.min(v.X/(W+40), v.Y/(H+40)), 0.25, 1)
 end
 local function applyScale()
 	local s = computeScale()
@@ -1756,6 +1757,9 @@ end
 toggleHide = function()
 	hidden = not hidden
 	fadeGui(hidden)
+	if mobileOrb then
+		mobileOrb.Visible = hidden
+	end
 end
 local function resetPos()
 	tween(win, 0.25, {Position = UDim2.fromScale(.5, .5)})
@@ -1773,12 +1777,56 @@ minBtn.MouseButton1Click:Connect(function()
 	if not hidden then
 		toggleHide()
 	end
-	if mobileOrb then
-		mobileOrb.Visible = hidden
-	end
 end)
 
---================= MOBILE =================
+--================= ORB (создаётся ВСЕГДА: способ открыть меню без клавиатуры) =================
+local orbGui = create("ScreenGui",{Name="EvadeMobileOrb",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=49},playerGui)
+local orb = create("TextButton",{Name="Orb",Text="",AutoButtonColor=false,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-16,1,-16),Size=UDim2.fromOffset(56,56),BackgroundColor3=Color3.fromRGB(20,20,20),BackgroundTransparency=.25,BorderSizePixel=0},orbGui)
+corner(orb,28)
+stroke(orb,.4,1.5)
+icon(orb,"OrbIcon",14,14,28,"Logo")
+mobileOrb = orb
+orb.Visible = false
+local orbDrag = false
+local orbMoved = 0
+local oStart = nil
+local oPos = nil
+orb.InputBegan:Connect(function(inp)
+	if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+		orbDrag = true
+		orbMoved = 0
+		oStart = inp.Position
+		oPos = orb.Position
+	end
+end)
+UIS.InputChanged:Connect(function(inp)
+	if orbDrag then
+		if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseMovement then
+			local d = inp.Position - oStart
+			if d.Magnitude > orbMoved then
+				orbMoved = d.Magnitude
+			end
+			orb.Position = UDim2.new(oPos.X.Scale, oPos.X.Offset + d.X, oPos.Y.Scale, oPos.Y.Offset + d.Y)
+		end
+	end
+end)
+UIS.InputEnded:Connect(function(inp)
+	if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+		orbDrag = false
+	end
+end)
+orb.MouseButton1Click:Connect(function()
+	if orbMoved > 10 then
+		orbMoved = 0
+		return
+	end
+	toggleHide()
+end)
+gui.Destroying:Connect(function()
+	orbGui:Destroy()
+end)
+
+--================= MOBILE (крупные кнопки окна) =================
 if isMobile then
 	minBtn.Size = UDim2.fromOffset(40,36)
 	minBtn.Position = UDim2.fromOffset(W-150,8)
@@ -1800,54 +1848,6 @@ if isMobile then
 	bar(closeBtn,20,18,18,2.5,45)
 	bar(closeBtn,20,18,18,2.5,-45)
 	maxSq.Size = UDim2.fromOffset(14,14)
-
-	local orbGui = create("ScreenGui",{Name="EvadeMobileOrb",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=49},playerGui)
-	local orb = create("TextButton",{Name="Orb",Text="",AutoButtonColor=false,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-16,1,-16),Size=UDim2.fromOffset(56,56),BackgroundColor3=Color3.fromRGB(20,20,20),BackgroundTransparency=.25,BorderSizePixel=0},orbGui)
-	corner(orb,28)
-	stroke(orb,.4,1.5)
-	icon(orb,"OrbIcon",14,14,28,"Logo")
-	mobileOrb = orb
-	orb.Visible = false
-
-	local orbDrag = false
-	local orbMoved = 0
-	local oStart = nil
-	local oPos = nil
-	orb.InputBegan:Connect(function(inp)
-		if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-			orbDrag = true
-			orbMoved = 0
-			oStart = inp.Position
-			oPos = orb.Position
-		end
-	end)
-	UIS.InputChanged:Connect(function(inp)
-		if orbDrag then
-			if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseMovement then
-				local d = inp.Position - oStart
-				if d.Magnitude > orbMoved then
-					orbMoved = d.Magnitude
-				end
-				orb.Position = UDim2.new(oPos.X.Scale, oPos.X.Offset + d.X, oPos.Y.Scale, oPos.Y.Offset + d.Y)
-			end
-		end
-	end)
-	UIS.InputEnded:Connect(function(inp)
-		if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-			orbDrag = false
-		end
-	end)
-	orb.MouseButton1Click:Connect(function()
-		if orbMoved > 10 then
-			orbMoved = 0
-			return
-		end
-		toggleHide()
-		orb.Visible = hidden
-	end)
-	gui.Destroying:Connect(function()
-		orbGui:Destroy()
-	end)
 end
 
 --================= ГЛОБАЛЬНЫЕ КЕЙБИНДЫ =================
