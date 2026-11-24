@@ -681,6 +681,9 @@ local uiScaleObj = create("UIScale",{Scale=1},root)
 local function computeScale()
 	local cam = workspace.CurrentCamera
 	local v = cam and cam.ViewportSize or Vector2.new(SCALE_BASE_W, SCALE_BASE_H)
+	if isMobile then
+		return math.clamp(math.min(v.X/(W+120), v.Y/(H+120)), 0.25, 0.85)
+	end
 	return math.clamp(math.min(v.X/(W+40), v.Y/(H+40)), 0.25, 1)
 end
 local function applyScale()
@@ -1790,10 +1793,10 @@ end)
 --================= ORB (только на мобильных: на ПК меню возвращается биндом hide) =================
 if isMobile then
 	local orbGui = create("ScreenGui",{Name="EvadeMobileOrb",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=49},playerGui)
-	local orb = create("TextButton",{Name="Orb",Text="",AutoButtonColor=false,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-16,1,-16),Size=UDim2.fromOffset(56,56),BackgroundColor3=Color3.fromRGB(20,20,20),BackgroundTransparency=.25,BorderSizePixel=0},orbGui)
-	corner(orb,28)
+	local orb = create("TextButton",{Name="Orb",Text="",AutoButtonColor=false,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-12,1,-12),Size=UDim2.fromOffset(44,44),BackgroundColor3=Color3.fromRGB(20,20,20),BackgroundTransparency=.25,BorderSizePixel=0},orbGui)
+	corner(orb,22)
 	stroke(orb,.4,1.5)
-	icon(orb,"OrbIcon",14,14,28,"Logo")
+	icon(orb,"OrbIcon",11,11,22,"Logo")
 	mobileOrb = orb
 	orb.Visible = false
 
