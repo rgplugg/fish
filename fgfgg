@@ -9,6 +9,7 @@ local isMobile = UIS.TouchEnabled
 local mobileOrb = nil
 local zone, zoneGui = nil, nil
 local zoneHeld = false
+local mobilePress = nil
 
 local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 for _, child in ipairs(playerGui:GetChildren()) do
@@ -1581,8 +1582,16 @@ local bhopConn = RunService.Heartbeat:Connect(function()
 	end
 	if spam then
 		bhopSpamming = true
-				if isMobile then
-			mobileTap(hum)
+		if isMobile then
+			local now = os.clock()
+			if now - lastMobileTap >= 0.05 then
+				lastMobileTap = now
+				if mobilePress then
+					mobilePress()
+				else
+					hum.Jump = true
+				end
+			end
 		else
 			if not spaceMacro(hum) then
 				hum.Jump = true
@@ -1862,15 +1871,48 @@ if isMobile then
 	end)
 end
 
---================= JUMP ZONE (mobile) =================
+--================= JUMP ZONE (mobile): обводка поверх JumpButton = триггер =================
 if isMobile then
 	local okZ, errZ = pcall(function()
 		local zoneGuiLocal = create("ScreenGui",{Name="EvadeJumpZone",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=45},playerGui)
 		zoneGui = zoneGuiLocal
-		zone = create("TextButton",{Name="JumpZone",Text="",AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,AnchorPoint=Vector2.new(0,0),Position=UDim2.new(1,-150,1,-150),Size=UDim2.fromOffset(96,96),BorderSizePixel=0},zoneGui)
+		zone = create("TextButton",{Name="JumpZone",Text="",AutoButtonColor=false,BackgroundColor3=WHITE,BackgroundTransparency=1,AnchorPoint=Vector2.new(0,0),Position=UDim2.new(1,-140,1,-140),Size=UDim2.fromOffset(96,96),BorderSizePixel=0},zoneGui)
 		corner(zone,999)
 		stroke(zone,0.15,2)
 		zone.Visible = false
+
+		local jumpBtn = nil
+		local function findJump()
+			local tg = playerGui:FindFirstChild("TouchGui")
+			if not tg then return nil end
+			local tcf = tg:FindFirstChild("TouchControlFrame")
+			if not tcf then return nil end
+			local jb = tcf:FindFirstChild("JumpButton")
+			if jb and jb:IsA("GuiObject") then return jb end
+			return nil
+		end
+
+		-- спам нажатия: тап по координатам кнопки + Space + hum.Jump
+		mobilePress = function()
+			if VIM and jumpBtn and jumpBtn.Parent then
+				local c = jumpBtn.AbsolutePosition + jumpBtn.AbsoluteSize / 2
+				pcall(function()
+					VIM:SendMouseButtonEvent(c.X, c.Y, 0, true, game, 1)
+					VIM:SendMouseButtonEvent(c.X, c.Y, 0, false, game, 1)
+				end)
+			end
+			if VIM then
+				pcall(function()
+					VIM:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+					VIM:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+				end)
+			end
+			local ch = Players.LocalPlayer.Character
+			local h = ch and ch:FindFirstChildOfClass("Humanoid")
+			if h then
+				h.Jump = true
+			end
+		end
 
 		local zoneDrag = false
 		local zoneManual = false
@@ -1888,11 +1930,7 @@ if isMobile then
 				zPos = zone.Position
 			else
 				zoneHeld = true
-				local ch = Players.LocalPlayer.Character
-				local h = ch and ch:FindFirstChildOfClass("Humanoid")
-				if h then
-					mobileTap(h)
-				end
+				mobilePress()
 			end
 		end)
 		UIS.InputChanged:Connect(function(inp)
@@ -1910,53 +1948,18 @@ if isMobile then
 			end
 		end)
 
-		local function findJumpButton()
-			local cg = game:GetService("CoreGui")
-			local tg = cg:FindFirstChild("TouchGui")
-			if tg then
-				local tcf = tg:FindFirstChild("TouchControlFrame")
-				if tcf then
-					local jb = tcf:FindFirstChild("JumpButton")
-					if jb and jb:IsA("GuiObject") then
-						return jb
-					end
-				end
-			end
-			local queue = {cg}
-			local depth = 0
-			local guard = 0
-			while #queue > 0 and depth < 16 and guard < 20000 do
-				local nextQ = {}
-				for _, node in ipairs(queue) do
-					local okC, children = pcall(function() return node:GetChildren() end)
-					if okC then
-						for _, ch in ipairs(children) do
-							guard = guard + 1
-							if ch.Name == "JumpButton" and ch:IsA("GuiObject") and ch.AbsoluteSize.X >= 40 and ch.AbsoluteSize.X <= 160 then
-								return ch
-							end
-							if ch:IsA("Folder") or ch:IsA("GuiObject") or ch:IsA("LayerCollector") then
-								table.insert(nextQ, ch)
-							end
-						end
-					end
-				end
-				queue = nextQ
-				depth = depth + 1
-			end
-			return nil
-		end
 		task.spawn(function()
 			while zoneGui and zoneGui.Parent do
-				if not zoneManual then
-					local ok, jb = pcall(findJumpButton)
-					if ok and jb and jb.AbsoluteSize.X > 10 then
+				local ok, jb = pcall(findJump)
+				if ok and jb then
+					jumpBtn = jb
+					if not zoneManual and jb.AbsoluteSize.X > 10 then
 						local pad = 4
 						zone.Position = UDim2.fromOffset(jb.AbsolutePosition.X - pad, jb.AbsolutePosition.Y - pad)
 						zone.Size = UDim2.fromOffset(jb.AbsoluteSize.X + pad*2, jb.AbsoluteSize.Y + pad*2)
 					end
 				end
-				task.wait(0.4)
+				task.wait(0.3)
 			end
 		end)
 		gui.Destroying:Connect(function()
