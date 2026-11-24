@@ -1773,6 +1773,9 @@ minBtn.MouseButton1Click:Connect(function()
 	if not hidden then
 		toggleHide()
 	end
+	if mobileOrb then
+		mobileOrb.Visible = hidden
+	end
 end)
 
 --================= MOBILE =================
