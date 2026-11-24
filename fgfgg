@@ -6,9 +6,7 @@ local RS = game:GetService("ReplicatedStorage")
 
 local isMobile = UIS.TouchEnabled
 local mobileOrb = nil
-local zone, zoneGui = nil, nil
 local zoneHeld = false
-local mobilePress = nil
 
 local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 for _, child in ipairs(playerGui:GetChildren()) do
@@ -1504,6 +1502,19 @@ local function forceJump(hum)
 	hum.Jump = true
 	pcall(function() hum:ChangeState(Enum.HumanoidStateType.Jumping) end)
 end
+local function mobileJumpSpam(hum)
+	pcall(function() hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, true) end)
+	pcall(function()
+		if hum.UseJumpPower then
+			if hum.JumpPower <= 0 then
+				hum.JumpPower = 50
+			end
+		elseif hum.JumpHeight <= 0 then
+			hum.JumpHeight = 7.2
+		end
+	end)
+	hum.Jump = true
+end
 local bhopSpamming = false
 local bhopConn = RunService.Heartbeat:Connect(function()
 	local char = Players.LocalPlayer.Character
@@ -1520,9 +1531,6 @@ local bhopConn = RunService.Heartbeat:Connect(function()
 	local forced = false
 	if not busy then
 		if isMobile then
-			if zone then
-				zone.Visible = (bhopMode == "Macro BHOP" or bhopMode == "Hold Unlimited Speed")
-			end
 			if bhopMode == "Macro BHOP" then
 				spam = zoneHeld
 			elseif bhopMode == "Always On" then
@@ -1547,11 +1555,7 @@ local bhopConn = RunService.Heartbeat:Connect(function()
 	if spam then
 		bhopSpamming = true
 		if isMobile then
-			if mobilePress then
-				mobilePress()
-			else
-				hum.Jump = true
-			end
+			mobileJumpSpam(hum)
 		else
 			if not spaceMacro(hum) then
 				hum.Jump = true
@@ -1827,13 +1831,12 @@ if isMobile then
 end
 
 if isMobile then
-	local okZ, errZ = pcall(function()
-		local zoneGuiLocal = create("ScreenGui",{Name="EvadeJumpZone",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=45},playerGui)
-		zoneGui = zoneGuiLocal
-		zone = create("Frame",{Name="JumpZone",Active=false,BackgroundColor3=WHITE,BackgroundTransparency=1,AnchorPoint=Vector2.new(0,0),Position=UDim2.new(1,-150,1,-150),Size=UDim2.fromOffset(96,96),BorderSizePixel=0},zoneGui)
-		corner(zone,999)
-		stroke(zone,0.15,2)
-		zone.Visible = false
+	pcall(function()
+		local outlineGui = create("ScreenGui",{Name="EvadeJumpOutline",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=45},playerGui)
+		local outline = create("Frame",{Name="Outline",Active=false,BackgroundColor3=WHITE,BackgroundTransparency=1,AnchorPoint=Vector2.new(0,0),Position=UDim2.new(0,0,0,0),Size=UDim2.fromOffset(10,10),BorderSizePixel=0},outlineGui)
+		corner(outline,999)
+		stroke(outline,0.15,2)
+		outline.Visible = false
 		local jumpBtn = nil
 		local function findJump()
 			local tg = playerGui:FindFirstChild("TouchGui")
@@ -1850,68 +1853,42 @@ if isMobile then
 			end
 			return nil
 		end
-		local lastClick = 0
-		mobilePress = function()
-			local now = os.clock()
-			if now - lastClick < 0.05 then
-				return
-			end
-			lastClick = now
-			if not VIM then
-				return
-			end
-			local jb = jumpBtn
-			if not jb or not jb.Parent then
-				return
-			end
-			local c = jb.AbsolutePosition + jb.AbsoluteSize / 2
-			pcall(function()
-				VIM:SendMouseButtonEvent(c.X, c.Y, 0, true, game, 1)
-				VIM:SendMouseButtonEvent(c.X, c.Y, 0, false, game, 1)
+		local function hook(btn)
+			btn.InputBegan:Connect(function(inp)
+				if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+					zoneHeld = true
+				end
+			end)
+			btn.InputEnded:Connect(function(inp)
+				if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+					zoneHeld = false
+				end
 			end)
 		end
-		local function inZone(pos)
-			if not zone or not zone.Visible then
-				return false
-			end
-			local ap = zone.AbsolutePosition
-			local as = zone.AbsoluteSize
-			return pos.X >= ap.X and pos.X <= ap.X + as.X and pos.Y >= ap.Y and pos.Y <= ap.Y + as.Y
-		end
-		UIS.InputBegan:Connect(function(inp)
-			if inp.UserInputType == Enum.UserInputType.Touch then
-				if inZone(inp.Position) then
-					zoneHeld = true
-					mobilePress()
-				end
-			end
-		end)
-		UIS.InputEnded:Connect(function(inp)
-			if inp.UserInputType == Enum.UserInputType.Touch then
-				zoneHeld = false
-			end
-		end)
 		task.spawn(function()
-			while zoneGui and zoneGui.Parent do
+			while outlineGui and outlineGui.Parent do
 				local ok, jb = pcall(findJump)
 				if ok and jb then
-					jumpBtn = jb
+					if jb ~= jumpBtn then
+						jumpBtn = jb
+						pcall(hook, jb)
+					end
 					if jb.AbsoluteSize.X > 10 then
 						local pad = 4
-						zone.Position = UDim2.fromOffset(jb.AbsolutePosition.X - pad, jb.AbsolutePosition.Y - pad)
-						zone.Size = UDim2.fromOffset(jb.AbsoluteSize.X + pad*2, jb.AbsoluteSize.Y + pad*2)
+						outline.Position = UDim2.fromOffset(jb.AbsolutePosition.X - pad, jb.AbsolutePosition.Y - pad)
+						outline.Size = UDim2.fromOffset(jb.AbsoluteSize.X + pad*2, jb.AbsoluteSize.Y + pad*2)
 					end
+					outline.Visible = (bhopMode == "Macro BHOP" or bhopMode == "Hold Unlimited Speed")
+				else
+					outline.Visible = false
 				end
 				task.wait(0.3)
 			end
 		end)
 		gui.Destroying:Connect(function()
-			zoneGuiLocal:Destroy()
+			outlineGui:Destroy()
 		end)
 	end)
-	if not okZ then
-		warn("[rg] jump zone error: " .. tostring(errZ))
-	end
 end
 
 if isMobile then
