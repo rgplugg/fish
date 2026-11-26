@@ -6,7 +6,10 @@ local RS = game:GetService("ReplicatedStorage")
 
 local isMobile = UIS.TouchEnabled
 local mobileOrb = nil
-local zoneHeld = false
+local bhopActive = false
+local bhopLocked = false
+local isCompact = false
+local bhopBtn, bhopBtnGui, bhopLockRow, refreshBhopUI, updateBhopBtnVisual
 
 local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 for _, child in ipairs(playerGui:GetChildren()) do
@@ -666,10 +669,16 @@ local uiScaleObj = create("UIScale",{Scale=1},root)
 local function computeScale()
 	local cam = workspace.CurrentCamera
 	local v = cam and cam.ViewportSize or Vector2.new(SCALE_BASE_W, SCALE_BASE_H)
+	local base
 	if isMobile then
-		return math.clamp(math.min(v.X/(W+120), v.Y/(H+120)), 0.25, 0.85)
+		base = math.clamp(math.min(v.X/(W+120), v.Y/(H+120)), 0.25, 0.85)
+	else
+		base = math.clamp(math.min(v.X/(W+40), v.Y/(H+40)), 0.25, 1)
 	end
-	return math.clamp(math.min(v.X/(W+40), v.Y/(H+40)), 0.25, 1)
+	if isCompact then
+		base = base * 0.6
+	end
+	return base
 end
 local function applyScale()
 	local s = computeScale()
@@ -762,10 +771,14 @@ local function winBtn(x,name)
 end
 local minBtn = winBtn(W-114,"Minimize")
 bar(minBtn,13,12,12,2,0)
-local maxVisual = create("Frame",{Name="MaximizeVisual",BackgroundTransparency=1,Position=UDim2.fromOffset(W-80,10),Size=UDim2.fromOffset(26,24),ZIndex=6},root)
+local maxVisual = create("TextButton",{Name="MaximizeVisual",Text="",AutoButtonColor=false,BackgroundTransparency=1,Position=UDim2.fromOffset(W-80,10),Size=UDim2.fromOffset(26,24),ZIndex=6},root)
 local maxSq = create("Frame",{BackgroundTransparency=1,AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5),Size=UDim2.fromOffset(10,10)},maxVisual)
 corner(maxSq,2)
 stroke(maxSq,.35,1.5)
+maxVisual.MouseButton1Click:Connect(function()
+	isCompact = not isCompact
+	applyScale()
+end)
 local closeBtn = winBtn(W-46,"Close")
 bar(closeBtn,13,12,14,2,45)
 bar(closeBtn,13,12,14,2,-45)
@@ -1132,49 +1145,6 @@ end
 local bhopMode = "None"
 local settingsRows = {}
 local dropOpen = false
-local vHeld = false
-local bhopPaused = false
-local spaceHeld = false
-UIS.InputBegan:Connect(function(input)
-	if input.UserInputType ~= Enum.UserInputType.Keyboard then
-		return
-	end
-	if input.KeyCode == Enum.KeyCode.Space then
-		if UIS:GetFocusedTextBox() then
-			return
-		end
-		spaceHeld = true
-		return
-	end
-	if Keys.listening then
-		return
-	end
-	if UIS:GetFocusedTextBox() then
-		return
-	end
-	if matches("bhop", input.KeyCode) then
-		if bhopMode == "Macro BHOP" then
-			vHeld = true
-		else
-			bhopPaused = not bhopPaused
-		end
-	end
-end)
-UIS.InputEnded:Connect(function(input)
-	if input.UserInputType ~= Enum.UserInputType.Keyboard then
-		return
-	end
-	if input.KeyCode == Enum.KeyCode.Space then
-		spaceHeld = false
-		return
-	end
-	local kb = Keys.bhop or "V"
-	local plus = kb:find(" + ",1,true)
-	local mainKey = plus and kb:sub(plus+3) or kb
-	if input.KeyCode.Name == mainKey then
-		vHeld = false
-	end
-end)
 local function makeSettingsPage()
 	local g = create("CanvasGroup",{Name="SettingsPage",BackgroundTransparency=1,GroupTransparency=1,Visible=false,Size=UDim2.fromOffset(PAGE_W,PAGE_H)},pageArea)
 	local pg = {group=g}
@@ -1279,7 +1249,7 @@ local function makeSettingsPage()
 			setFov(fovBox.Text)
 		end
 	end)
-	local bhopRow = makeRow(SET_BHOP_Y,"BHOP","Macro / auto bunny hop / unlimited speed.","BHOP")
+	local bhopRow = makeRow(SET_BHOP_Y,"BHOP","Enable auto bhop, then use the B button.","BHOP")
 	local dropBtn = create("TextButton",{Text="",AutoButtonColor=false,BackgroundColor3=INNER_BG,BackgroundTransparency=INNER_TR,Position=UDim2.fromOffset(528,16),Size=UDim2.fromOffset(300,44),BorderSizePixel=0},bhopRow)
 	corner(dropBtn,12)
 	stroke(dropBtn,EDGE_INNER,1)
@@ -1304,7 +1274,6 @@ local function makeSettingsPage()
 	end
 	local function selectBhop(opt)
 		bhopMode = opt
-		bhopPaused = false
 		dropValue.Text = opt
 		for o,c in pairs(optChecks) do
 			c.holder.Visible = (o==opt)
@@ -1312,8 +1281,11 @@ local function makeSettingsPage()
 			tween(c.st,.15,{Transparency=o==opt and .6 or 1})
 		end
 		closeDrop()
+		if refreshBhopUI then
+			refreshBhopUI()
+		end
 	end
-	local opts = {"None","Macro BHOP","Always On","Hold Unlimited Speed","Alw Unlimited Speed"}
+	local opts = {"None","Alw Unlimited Speed"}
 	local OPT_H = 44
 	for i,opt in ipairs(opts) do
 		local b = create("TextButton",{Text="",AutoButtonColor=false,BackgroundColor3=WHITE,BackgroundTransparency=1,Position=UDim2.fromOffset(6,6+(i-1)*OPT_H),Size=UDim2.fromOffset(288,38),BorderSizePixel=0,ZIndex=31},dropPanel)
@@ -1356,13 +1328,23 @@ local function makeSettingsPage()
 	corner(keyRow,16)
 	stroke(keyRow,EDGE_PLATE,1)
 	table.insert(settingsRows,{frame=keyRow,name="Keybinds"})
-	local bhopKeyRow = create("Frame",{Name="BHOPKeyRow",BackgroundColor3=PLATE_BG,BackgroundTransparency=PLATE_TR,Position=UDim2.fromOffset(PAD,SET_BHOPKEY_Y),Size=UDim2.fromOffset(ROW_W,76),BorderSizePixel=0},g)
-	corner(bhopKeyRow,16)
-	stroke(bhopKeyRow,EDGE_PLATE,1)
-	icon(bhopKeyRow,"RowIcon",16,21,34,"Keybinds")
-	label(bhopKeyRow,"BHOP Key",64,16,340,22,16,Enum.Font.GothamBold,WHITE)
-	label(bhopKeyRow,"Hold = macro spam · tap = pause/resume other modes",64,40,420,16,12,Enum.Font.Gotham,DESC)
-	table.insert(settingsRows,{frame=bhopKeyRow,name="BHOP Key"})
+	local lockRow = create("Frame",{Name="BhopLockRow",BackgroundColor3=PLATE_BG,BackgroundTransparency=PLATE_TR,Position=UDim2.fromOffset(PAD,SET_BHOPKEY_Y),Size=UDim2.fromOffset(ROW_W,76),BorderSizePixel=0,Visible=false},g)
+	corner(lockRow,16)
+	stroke(lockRow,EDGE_PLATE,1)
+	icon(lockRow,"RowIcon",16,21,34,"Keybinds")
+	label(lockRow,"Bhop Lock",64,16,340,22,16,Enum.Font.GothamBold,WHITE)
+	label(lockRow,"Lock the B button so it cannot be dragged",64,40,420,16,12,Enum.Font.Gotham,DESC)
+	table.insert(settingsRows,{frame=lockRow,name="Bhop Lock"})
+	local lockBtn = create("TextButton",{Name="LockToggle",Text="",AutoButtonColor=false,AnchorPoint=Vector2.new(1,.5),Position=UDim2.new(1,-14,.5,0),Size=UDim2.fromOffset(140,44),BackgroundColor3=INNER_BG,BackgroundTransparency=INNER_TR,BorderSizePixel=0},lockRow)
+	corner(lockBtn,12)
+	stroke(lockBtn,EDGE_INNER,1)
+	local lockLbl = label(lockBtn,"UNLOCKED",0,0,140,44,14,Enum.Font.GothamSemibold,WHITE,Enum.TextXAlignment.Center)
+	lockBtn.MouseButton1Click:Connect(function()
+		bhopLocked = not bhopLocked
+		lockLbl.Text = bhopLocked and "LOCKED" or "UNLOCKED"
+		tween(lockBtn,.2,{BackgroundColor3 = bhopLocked and Color3.fromRGB(60,60,60) or INNER_BG})
+	end)
+	bhopLockRow = lockRow
 	local dropCol = INNER_BG
 	local hoverCol = dropCol:Lerp(WHITE,.08)
 	local pressCol = dropCol:Lerp(WHITE,.15)
@@ -1398,9 +1380,6 @@ local function makeSettingsPage()
 			tween(b,.14,{BackgroundColor3=hoverCol})
 		end)
 		b.MouseButton1Click:Connect(function()
-			if isMobile and action == "bhop" then
-				return
-			end
 			if Keys.lastFinalize==action and os.clock()-Keys.lastFinalizeAt<0.3 then
 				Keys.lastFinalize=nil
 				return
@@ -1414,11 +1393,9 @@ local function makeSettingsPage()
 	end
 	mkBindBtn(keyRow,"hide","Show / Hide",false,false)
 	mkBindBtn(keyRow,"reset","Reset Position",true,false)
-	mkBindBtn(bhopKeyRow,"bhop","BHOP Trigger",true,false,300)
 	if isMobile then
 		pcall(function()
 			keyRow.Visible = false
-			bhopKeyRow.Visible = false
 		end)
 	end
 	pg.closeDrop = closeDrop
@@ -1466,19 +1443,6 @@ end)
 
 local VIM
 pcall(function() VIM = game:GetService("VirtualInputManager") end)
-local function spaceMacro(hum)
-	if isMobile then
-		return true
-	end
-	if not VIM then
-		return false
-	end
-	local ok = pcall(function()
-		VIM:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
-		VIM:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-	end)
-	return ok
-end
 spaceRelease = function()
 	if isMobile then
 		return
@@ -1502,70 +1466,17 @@ local function forceJump(hum)
 	hum.Jump = true
 	pcall(function() hum:ChangeState(Enum.HumanoidStateType.Jumping) end)
 end
-local function mobileJumpSpam(hum)
-	pcall(function() hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, true) end)
-	pcall(function()
-		if hum.UseJumpPower then
-			if hum.JumpPower <= 0 then
-				hum.JumpPower = 50
-			end
-		elseif hum.JumpHeight <= 0 then
-			hum.JumpHeight = 7.2
-		end
-	end)
-	hum.Jump = true
-end
-local bhopSpamming = false
 local bhopConn = RunService.Heartbeat:Connect(function()
 	local char = Players.LocalPlayer.Character
 	local hum = char and char:FindFirstChildOfClass("Humanoid")
 	if not hum or hum.Health <= 0 then
-		if bhopSpamming then
-			bhopSpamming = false
-			spaceRelease()
-		end
 		return
 	end
 	local busy = Keys.listening ~= nil or UIS:GetFocusedTextBox() ~= nil
-	local spam = false
-	local forced = false
-	if not busy then
-		if isMobile then
-			if bhopMode == "Macro BHOP" then
-				spam = zoneHeld
-			elseif bhopMode == "Always On" then
-				spam = true
-			elseif bhopMode == "Hold Unlimited Speed" then
-				forced = zoneHeld
-			elseif bhopMode == "Alw Unlimited Speed" then
-				forced = true
-			end
-		else
-			if bhopMode == "Macro BHOP" then
-				spam = vHeld
-			elseif bhopMode == "Always On" then
-				spam = not bhopPaused
-			elseif bhopMode == "Hold Unlimited Speed" then
-				forced = spaceHeld and not bhopPaused
-			elseif bhopMode == "Alw Unlimited Speed" then
-				forced = not bhopPaused
-			end
-		end
+	if busy then
+		return
 	end
-	if spam then
-		bhopSpamming = true
-		if isMobile then
-			mobileJumpSpam(hum)
-		else
-			if not spaceMacro(hum) then
-				hum.Jump = true
-			end
-		end
-	elseif bhopSpamming then
-		bhopSpamming = false
-		spaceRelease()
-	end
-	if forced and hum.FloorMaterial ~= Enum.Material.Air then
+	if bhopMode == "Alw Unlimited Speed" and bhopActive and hum.FloorMaterial ~= Enum.Material.Air then
 		forceJump(hum)
 	end
 end)
@@ -1634,7 +1545,11 @@ searchInput:GetPropertyChangedSignal("Text"):Connect(function()
 	end
 	if navDefs[currentIndex][2]=="settings" then
 		for _,r in ipairs(settingsRows) do
-			r.frame.Visible = (q=="") or r.name:lower():find(q,1,true)~=nil
+			if r.name == "Bhop Lock" then
+				r.frame.Visible = (bhopMode == "Alw Unlimited Speed") and (q=="" or r.name:lower():find(q,1,true)~=nil)
+			else
+				r.frame.Visible = (q=="") or r.name:lower():find(q,1,true)~=nil
+			end
 		end
 	end
 end)
@@ -1832,67 +1747,6 @@ end
 
 if isMobile then
 	pcall(function()
-		local outlineGui = create("ScreenGui",{Name="EvadeJumpOutline",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=45},playerGui)
-		local outline = create("Frame",{Name="Outline",Active=false,BackgroundColor3=WHITE,BackgroundTransparency=1,AnchorPoint=Vector2.new(0,0),Position=UDim2.new(0,0,0,0),Size=UDim2.fromOffset(10,10),BorderSizePixel=0},outlineGui)
-		corner(outline,999)
-		stroke(outline,0.15,2)
-		outline.Visible = false
-		local jumpBtn = nil
-		local function findJump()
-			local tg = playerGui:FindFirstChild("TouchGui")
-			if not tg then
-				return nil
-			end
-			local tcf = tg:FindFirstChild("TouchControlFrame")
-			if not tcf then
-				return nil
-			end
-			local jb = tcf:FindFirstChild("JumpButton")
-			if jb and jb:IsA("GuiObject") then
-				return jb
-			end
-			return nil
-		end
-		local function hook(btn)
-			btn.InputBegan:Connect(function(inp)
-				if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-					zoneHeld = true
-				end
-			end)
-			btn.InputEnded:Connect(function(inp)
-				if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-					zoneHeld = false
-				end
-			end)
-		end
-		task.spawn(function()
-			while outlineGui and outlineGui.Parent do
-				local ok, jb = pcall(findJump)
-				if ok and jb then
-					if jb ~= jumpBtn then
-						jumpBtn = jb
-						pcall(hook, jb)
-					end
-					if jb.AbsoluteSize.X > 10 then
-						local pad = 4
-						outline.Position = UDim2.fromOffset(jb.AbsolutePosition.X - pad, jb.AbsolutePosition.Y - pad)
-						outline.Size = UDim2.fromOffset(jb.AbsoluteSize.X + pad*2, jb.AbsoluteSize.Y + pad*2)
-					end
-					outline.Visible = (bhopMode == "Macro BHOP" or bhopMode == "Hold Unlimited Speed")
-				else
-					outline.Visible = false
-				end
-				task.wait(0.3)
-			end
-		end)
-		gui.Destroying:Connect(function()
-			outlineGui:Destroy()
-		end)
-	end)
-end
-
-if isMobile then
-	pcall(function()
 		minBtn.Size = UDim2.fromOffset(40,36)
 		minBtn.Position = UDim2.fromOffset(W-150,8)
 		maxVisual.Position = UDim2.fromOffset(W-104,8)
@@ -1915,6 +1769,82 @@ if isMobile then
 		maxSq.Size = UDim2.fromOffset(14,14)
 	end)
 end
+
+updateBhopBtnVisual = function()
+	if not bhopBtn then
+		return
+	end
+	if bhopActive then
+		tween(bhopBtn,.15,{BackgroundColor3=Color3.fromRGB(60,60,60),BackgroundTransparency=.1})
+	else
+		tween(bhopBtn,.15,{BackgroundColor3=Color3.fromRGB(20,20,20),BackgroundTransparency=.35})
+	end
+end
+
+do
+	bhopBtnGui = create("ScreenGui",{Name="EvadeBhopButton",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=48},playerGui)
+	bhopBtn = create("TextButton",{Name="B",Text="B",Font=Enum.Font.GothamBold,TextSize=20,TextColor3=WHITE,AutoButtonColor=false,AnchorPoint=Vector2.new(1,1),Position=UDim2.new(1,-70,1,-70),Size=UDim2.fromOffset(46,46),BackgroundColor3=Color3.fromRGB(20,20,20),BackgroundTransparency=.35,BorderSizePixel=0},bhopBtnGui)
+	corner(bhopBtn,23)
+	stroke(bhopBtn,.4,1.5)
+	bhopBtn.Visible = false
+	local bDrag = false
+	local bMoved = 0
+	local bStart = nil
+	local bPos = nil
+	bhopBtn.InputBegan:Connect(function(inp)
+		if inp.UserInputType==Enum.UserInputType.Touch or inp.UserInputType==Enum.UserInputType.MouseButton1 then
+			if not bhopLocked then
+				bDrag = true
+				bMoved = 0
+				bStart = inp.Position
+				bPos = bhopBtn.Position
+			end
+		end
+	end)
+	UIS.InputChanged:Connect(function(inp)
+		if bDrag and (inp.UserInputType==Enum.UserInputType.Touch or inp.UserInputType==Enum.UserInputType.MouseMovement) then
+			local d = inp.Position - bStart
+			if d.Magnitude > bMoved then
+				bMoved = d.Magnitude
+			end
+			bhopBtn.Position = UDim2.new(bPos.X.Scale, bPos.X.Offset + d.X, bPos.Y.Scale, bPos.Y.Offset + d.Y)
+		end
+	end)
+	UIS.InputEnded:Connect(function(inp)
+		if inp.UserInputType==Enum.UserInputType.Touch or inp.UserInputType==Enum.UserInputType.MouseButton1 then
+			bDrag = false
+		end
+	end)
+	bhopBtn.MouseButton1Click:Connect(function()
+		if bMoved > 10 then
+			bMoved = 0
+			return
+		end
+		bhopActive = not bhopActive
+		updateBhopBtnVisual()
+	end)
+	gui.Destroying:Connect(function()
+		bhopBtnGui:Destroy()
+	end)
+end
+
+refreshBhopUI = function()
+	local on = (bhopMode == "Alw Unlimited Speed")
+	if bhopBtn then
+		bhopBtn.Visible = on
+	end
+	if bhopBtnGui then
+		bhopBtnGui.Enabled = on
+	end
+	if bhopLockRow then
+		bhopLockRow.Visible = on
+	end
+	if not on then
+		bhopActive = false
+	end
+	updateBhopBtnVisual()
+end
+refreshBhopUI()
 
 UIS.InputBegan:Connect(function(i,gp)
 	if Keys.listening then
