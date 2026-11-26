@@ -1328,7 +1328,8 @@ local function makeSettingsPage()
 	corner(keyRow,16)
 	stroke(keyRow,EDGE_PLATE,1)
 	table.insert(settingsRows,{frame=keyRow,name="Keybinds"})
-	local lockRow = create("Frame",{Name="BhopLockRow",BackgroundColor3=PLATE_BG,BackgroundTransparency=PLATE_TR,Position=UDim2.fromOffset(PAD, isMobile and SET_KEYS_Y or SET_BHOPKEY_Y),Size=UDim2.fromOffset(ROW_W,76),BorderSizePixel=0,Visible=false},g)
+	local lockY = isMobile and SET_KEYS_Y or SET_BHOPKEY_Y
+	local lockRow = create("Frame",{Name="BhopLockRow",BackgroundColor3=PLATE_BG,BackgroundTransparency=PLATE_TR,Position=UDim2.fromOffset(PAD,lockY),Size=UDim2.fromOffset(ROW_W,76),BorderSizePixel=0,Visible=false},g)
 	corner(lockRow,16)
 	stroke(lockRow,EDGE_PLATE,1)
 	icon(lockRow,"RowIcon",16,21,34,"Keybinds")
@@ -1547,6 +1548,8 @@ searchInput:GetPropertyChangedSignal("Text"):Connect(function()
 		for _,r in ipairs(settingsRows) do
 			if r.name == "Bhop Lock" then
 				r.frame.Visible = (bhopMode == "Alw Unlimited Speed") and (q=="" or r.name:lower():find(q,1,true)~=nil)
+			elseif r.name == "Keybinds" and isMobile then
+				r.frame.Visible = false
 			else
 				r.frame.Visible = (q=="") or r.name:lower():find(q,1,true)~=nil
 			end
